@@ -11,8 +11,6 @@
 
 #include <math/vec2d.hpp>
 
-#include <utils/logger.hpp>
-
 #include <pixel.hpp>
 
 namespace arti {
@@ -52,7 +50,7 @@ namespace arti {
                 texture.setView(view);
             }
 
-            inline void render(sf::Sprite& spr, sf::RenderWindow& wind) {
+            inline void render(sf::Sprite& spr, sf::RenderWindow& wind) const {
                 spr.setTexture(texture.getTexture(), true);
                 spr.setPosition(offset.x, offset.y + to<float>(texture.getSize().y) * scale);
                 spr.setScale(scale, -scale);
@@ -105,20 +103,9 @@ namespace arti {
         void renderLine(const math::vec2df& pointA, const math::vec2df& pointB, const pixel& color);
         void renderLine(const math::vec2df& pointA, const math::vec2df& pointB, float thickness, const pixel& color);
 
-        void render(const sf::Drawable& drawable) {
-            layersList.at(targetedLayer).texture.draw(drawable);
-        }
+        void render(const sf::Drawable& drawable);
 
-        bool isVisible(const math::vec2df& world_pos, float radius = 0.0f) {
-            auto sup_left = screenToView(layerToScreen({0, 0}));
-            auto inf_right = screenToView(layerToScreen(to<math::vec2df>(getLayerSize())));
-            auto window_limit = screenToView(window.getSize());
-            if (inf_right.y > window_limit.y) {
-                inf_right = window_limit;
-            }
-            auto box = (math::vec2df{radius, radius});
-            return world_pos >= (sup_left - box) && world_pos <= (inf_right + box);
-        }
+        bool isVisible(const math::vec2df& world_pos, float radius = 0.0f);
 
         math::vec2df screenToLayer(const math::vec2df& coord);
         math::vec2df layerToScreen(const math::vec2df& coord);
@@ -129,8 +116,6 @@ namespace arti {
     protected:
         bool init();
         bool render();
-
-
 
         app* appInstance;
 

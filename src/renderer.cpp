@@ -6,7 +6,6 @@
 
 #include <app.hpp>
 #include <imgui.hpp>
-
 #include <utils/logger.hpp>
 
 namespace arti {
@@ -94,6 +93,7 @@ namespace arti {
             logger::error("Couldn't resize texture {} to {}", targetedLayer, newSize.to_string());
             layersList.erase(targetedLayer);
         }
+        layersList.at(targetedLayer).updateView();
     }
 
     bool renderer::enableLayer(const layer_id& id, bool enabled) {
@@ -259,6 +259,21 @@ namespace arti {
 
     math::vec2df renderer::viewToScreen(const math::vec2df& coord) {
         return layerToScreen((coord - layersList[targetedLayer].viewOffset) * layersList[targetedLayer].viewScale);
+    }
+
+    void renderer::render(const sf::Drawable &drawable) {
+        layersList.at(targetedLayer).texture.draw(drawable);
+    }
+
+    bool renderer::isVisible(const math::vec2df &world_pos, float radius) {
+        auto sup_left = screenToView(layerToScreen({0, 0}));
+        auto inf_right = screenToView(layerToScreen(to<math::vec2df>(getLayerSize())));
+        auto window_limit = screenToView(window.getSize());
+        if (inf_right.y > window_limit.y) {
+            inf_right = window_limit;
+        }
+        auto box = (math::vec2df{radius, radius});
+        return world_pos >= (sup_left - box) && world_pos <= (inf_right + box);
     }
 
 }

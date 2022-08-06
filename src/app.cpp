@@ -30,6 +30,8 @@ namespace arti {
         this->appName = name;
         window.create(sf::VideoMode(windowSize.x, windowSize.y), appName, style);
 
+        if (isInitialized) return true;
+
         if (! ImGui::SFML::Init(window, false)) {
             logger::error("Failed to init ImGui");
             return false;
@@ -39,6 +41,8 @@ namespace arti {
             logger::error("Couldn't initialize renderer");
             return false;
         }
+
+        input->update();
 
         if (! onInit()) {
             return false;
@@ -147,19 +151,23 @@ namespace arti {
                 break;
 
             case sf::Event::KeyPressed:
-                input->registerKeyState(to<key_t>(event.key.code), true);
-                input->registerKeyState(key_t::Alt, event.key.alt);
-                input->registerKeyState(key_t::Ctrl, event.key.control);
-                input->registerKeyState(key_t::Shift, event.key.shift);
-                input->registerKeyState(key_t::System, event.key.system);
+                if (event.key.code != sf::Keyboard::Unknown) {
+                    input->registerKeyState(to<key_t>(event.key.code), true);
+                    input->registerKeyState(key_t::Alt, event.key.alt);
+                    input->registerKeyState(key_t::Ctrl, event.key.control);
+                    input->registerKeyState(key_t::Shift, event.key.shift);
+                    input->registerKeyState(key_t::System, event.key.system);
+                }
                 break;
 
             case sf::Event::KeyReleased:
-                input->registerKeyState(to<key_t>(event.key.code), false);
-                input->registerKeyState(key_t::Alt, event.key.alt);
-                input->registerKeyState(key_t::Ctrl, event.key.control);
-                input->registerKeyState(key_t::Shift, event.key.shift);
-                input->registerKeyState(key_t::System, event.key.system);
+                if (event.key.code != sf::Keyboard::Unknown) {
+                    input->registerKeyState(to<key_t>(event.key.code), false);
+                    input->registerKeyState(key_t::Alt, event.key.alt);
+                    input->registerKeyState(key_t::Ctrl, event.key.control);
+                    input->registerKeyState(key_t::Shift, event.key.shift);
+                    input->registerKeyState(key_t::System, event.key.system);
+                }
                 break;
 
             case sf::Event::MouseButtonPressed:
