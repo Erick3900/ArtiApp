@@ -1,7 +1,0 @@
-[submodule "deps/sfml"]
-	path = deps/sfml
-	url = https://github.com/SFML/SFML.git
-	branch = "2.6.x"
-[submodule "deps/fmt"]
-	path = deps/fmt
-	url = https://github.com/fmtlib/fmt.git

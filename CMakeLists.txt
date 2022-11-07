@@ -1,11 +1,49 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(ArtiApp)
+set(CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
+set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_subdirectory(deps)
-add_subdirectory(deps/fmt)
+project(ArtiApp)
+
+find_package(fmt CONFIG REQUIRED)
+find_package(SFML CONFIG REQUIRED)
+
+add_library(
+    imgui-sfml STATIC
+        deps/imgui/src/imgui.cpp
+        deps/imgui/src/imgui_demo.cpp
+        deps/imgui/src/imgui_draw.cpp
+        deps/imgui/src/imgui_tables.cpp
+        deps/imgui/src/imgui_stdlib.cpp
+        deps/imgui/src/imgui_widgets.cpp
+        deps/imgui/src/imgui-SFML.cpp
+)
+
+target_include_directories(
+    imgui-sfml PUBLIC
+        deps/imgui/include
+)
+
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    set(GL_LIB GL)
+elseif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+    set(GL_LIB openGL32)
+else()
+    message(FATAL_ERROR "Other system than Linux or Windows is not supported")
+endif()
+
+target_link_libraries(
+    imgui-sfml PUBLIC
+        SFML::SFML
+        SFML::system
+        SFML::window
+        SFML::graphics
+        ${GL_LIB}
+)
 
 add_library(
     ArtiApp STATIC
@@ -43,5 +81,5 @@ target_include_directories(
 target_link_libraries(
     ArtiApp PUBLIC
         imgui-sfml
-        fmt
+        fmt::fmt
 )
